@@ -9,6 +9,8 @@
 import UIKit
 import MapKit
 import CoreLocation
+import Alamofire
+import AlamofireImage
 
 class MapVC: UIViewController , UIGestureRecognizerDelegate{
     //MARK:Outlets
@@ -25,6 +27,7 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
     var progressLbl:UILabel?
     
     var screenSize = UIScreen.main.bounds
+    
     
     //CollectionView
     var collectionView:UICollectionView?
@@ -93,6 +96,7 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
             progressLbl?.removeFromSuperview()
         }
     }
+
     //MARK:Action
     @IBAction func currentPlaceWasPressed(_ sender: Any) {
         if authorizatoinStatus == .authorizedAlways || authorizatoinStatus == .authorizedWhenInUse {
@@ -145,7 +149,11 @@ extension MapVC:MKMapViewDelegate {
         print(coordinatePoint as Any)
         let Annotation = DroppablePoint(coordinate: coordinatePoint, identefire: "droppablePin")
         mapView.addAnnotation(Annotation)
-        
+        print(DataService.instanc.flickrURL(forApiKey: API_KEY, withAnnotation: Annotation, andNumberOfPhoto: 40))
+        DataService.instanc.retriveURLS(forAnnotation: Annotation) { (true,photoUrlArray) in
+            //
+            print(photoUrlArray)
+        }
         let coordinateRegion = MKCoordinateRegion(center: coordinatePoint, latitudinalMeters: regionRaduis * 2.0 , longitudinalMeters: regionRaduis * 2.0)
         mapView.setRegion(coordinateRegion, animated: true)
     }
