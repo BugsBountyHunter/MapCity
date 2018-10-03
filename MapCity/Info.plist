@@ -39,5 +39,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>APP Need Access to location to pull Image From fiker</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>APP Need Access to location to pull Image From fiker</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>APP Need Access to location to pull Image From fiker</string>
 </dict>
 </plist>
