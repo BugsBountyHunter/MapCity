@@ -16,7 +16,7 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
     //MARK:Outlets
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var pullupViewHeightConstraint: NSLayoutConstraint!
-    
+
     @IBOutlet weak var pullUpView: UIView!
     //Variable
     var locationManager = CLLocationManager()
@@ -24,11 +24,11 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
     var regionRaduis:Double = 1000
     
     var spinner:UIActivityIndicatorView?
-    var progressLbl:UILabel?
+    static var progressLbl:UILabel?
     
     var screenSize = UIScreen.main.bounds
     
-    
+
     //CollectionView
     var collectionView:UICollectionView?
     var flowLayout = UICollectionViewFlowLayout()
@@ -37,8 +37,17 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
         super.viewDidLoad()
         mapView.delegate = self
         locationManager.delegate = self
+        
         configureLocation()
         addDoubleTap()
+        
+        //CollectionView Propertise
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
+        collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: "photoCell")
+        collectionView?.delegate = self
+        collectionView?.dataSource = self
+        collectionView?.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        pullUpView.addSubview(collectionView!)
        
     }
     //MARK:Functions
@@ -48,11 +57,7 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
         doubleTap.delegate = self
         mapView.addGestureRecognizer(doubleTap)
         
-        //CollectionView Propertise
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
-        collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: "photoCell")
-        collectionView?.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
-        pullUpView.addSubview(collectionView!)
+   
     }
     func animatedViewUp(){
         pullupViewHeightConstraint.constant = 300
@@ -83,17 +88,16 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
     
     //ADD AND REMOVE PRGRESSLBL
     func addPrgressLbl(){
-        progressLbl = UILabel()
-        progressLbl?.frame = CGRect(x: (screenSize.width / 2 ) - 120 , y: 170, width: 240, height: 40)
-        progressLbl?.text = "12/40 PHOTO LOAD..."
-        progressLbl?.textColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1)
-        progressLbl?.font = UIFont (name: "Avenir Next", size: 18)
-        progressLbl?.textAlignment = .center
-        collectionView?.addSubview(progressLbl!)
+        MapVC.progressLbl = UILabel()
+        MapVC.progressLbl?.frame = CGRect(x: (screenSize.width / 2 ) - 120 , y: 170, width: 240, height: 40)
+        MapVC.progressLbl?.textColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1)
+        MapVC.progressLbl?.font = UIFont (name: "Avenir Next", size: 14)
+        MapVC.progressLbl?.textAlignment = .center
+        collectionView?.addSubview(MapVC.progressLbl!)
     }
     func removeProgressLbl(){
-        if progressLbl != nil {
-            progressLbl?.removeFromSuperview()
+        if MapVC.progressLbl != nil {
+            MapVC.progressLbl?.removeFromSuperview()
         }
     }
 
@@ -106,6 +110,9 @@ class MapVC: UIViewController , UIGestureRecognizerDelegate{
     
     //MARK:@objc
     @objc func animatedViewDown(){
+       DataService.instanc.cancelAllSession()
+        DataService.instanc.imageArray = []
+        collectionView?.reloadData()
        pullupViewHeightConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
          self.view.layoutIfNeeded()
@@ -136,7 +143,10 @@ extension MapVC:MKMapViewDelegate {
     @objc func dropPin(sender:UITapGestureRecognizer){
         removePin()
         animatedViewUp()
-        
+        DataService.instanc.cancelAllSession()
+        DataService.instanc.imageURLArray = []
+        DataService.instanc.imageArray = []
+        collectionView?.reloadData()
         removeSpinner()
         removeProgressLbl()
         
@@ -144,18 +154,30 @@ extension MapVC:MKMapViewDelegate {
         
         addSpinner()
         addPrgressLbl()
+        
         let touchPoint = sender.location(in: mapView)
         let coordinatePoint = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         print(coordinatePoint as Any)
         let Annotation = DroppablePoint(coordinate: coordinatePoint, identefire: "droppablePin")
         mapView.addAnnotation(Annotation)
         print(DataService.instanc.flickrURL(forApiKey: API_KEY, withAnnotation: Annotation, andNumberOfPhoto: 40))
-        DataService.instanc.retriveURLS(forAnnotation: Annotation) { (true,photoUrlArray) in
-            //
-            print(photoUrlArray)
-        }
+
         let coordinateRegion = MKCoordinateRegion(center: coordinatePoint, latitudinalMeters: regionRaduis * 2.0 , longitudinalMeters: regionRaduis * 2.0)
         mapView.setRegion(coordinateRegion, animated: true)
+        
+        DataService.instanc.retriveURLS(forAnnotation: Annotation) { (success) in
+            if success{
+                DataService.instanc.retriveImage(handler: { (finished) in
+                    if finished{
+                    self.removeSpinner()
+                    self.removeProgressLbl()
+                
+                    self.collectionView?.reloadData()
+                
+                    }
+                })
+            }
+        }
     }
     //Remove pre-pins
     func removePin(){
@@ -182,11 +204,13 @@ extension MapVC:UICollectionViewDelegate , UICollectionViewDataSource , UICollec
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return DataService.instanc.imageArray.count
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-        
+        let indexArray = DataService.instanc.imageArray[indexPath.item]
+        let image = UIImageView(image: indexArray)
+        cell.addSubview(image)
         return cell
     }
 }

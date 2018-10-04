@@ -15,6 +15,7 @@ class DataService{
     static let instanc = DataService()
     //Variabel
     var imageURLArray = [String]()
+    var imageArray = [UIImage]()
     
     //FUNCTION:
     func flickrURL(forApiKey apiKey:String ,withAnnotation annotation:DroppablePoint ,andNumberOfPhoto number:Int)->String{
@@ -22,8 +23,7 @@ class DataService{
         return URL
     }
     //Retrive Data from Flickr URL
-    func retriveURLS(forAnnotation annotation:DroppablePoint ,handler:@escaping(_ status:Bool,_ imageURLS:[String])->()){
-        imageURLArray = []
+    func retriveURLS(forAnnotation annotation:DroppablePoint ,handler:@escaping(_ status:Bool)->()){
         Alamofire.request(flickrURL(forApiKey: API_KEY, withAnnotation: annotation, andNumberOfPhoto: 40)).responseJSON { (respons) in
             guard let json = respons.result.value as? Dictionary<String,AnyObject> else{return}
             let photosDict = json["photos"] as! Dictionary<String,AnyObject>
@@ -40,8 +40,34 @@ class DataService{
             let postURL = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_h_d.jpg"
                 self.imageURLArray.append(postURL)
             }
-            handler(true,self.imageURLArray)
+            handler(true)
         }
     }
-    
+    //Retrive image from imageUrlsArray
+    func retriveImage(handler:@escaping(_ status:Bool)->()){
+        
+        for url in imageURLArray {
+            Alamofire.request(url).responseImage { (respons) in
+                guard let image = respons.result.value else{return}
+                self.imageArray.append(image)
+                MapVC.progressLbl?.text = "\(self.imageArray.count)/40 IMAGES DOWNLOADED..."
+                print(self.imageArray.count)
+                
+                if self.imageArray.count == self.imageURLArray.count {
+                    handler(true)
+                }
+            }
+        }
+       
+    }
+    func cancelAllSession(){
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach({$0.cancel()})
+            downloadData.forEach({$0.cancel()})
+//            //for item in sessionDataTask {
+//            item.camcel()
+//
+//        }
+        }
+    }
 }
