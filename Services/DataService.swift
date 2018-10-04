@@ -26,6 +26,7 @@ class DataService{
     func retriveURLS(forAnnotation annotation:DroppablePoint ,handler:@escaping(_ status:Bool)->()){
         Alamofire.request(flickrURL(forApiKey: API_KEY, withAnnotation: annotation, andNumberOfPhoto: 40)).responseJSON { (respons) in
             guard let json = respons.result.value as? Dictionary<String,AnyObject> else{return}
+            print(json)
             let photosDict = json["photos"] as! Dictionary<String,AnyObject>
             let photoDictArray = photosDict["photo"] as! [Dictionary<String,AnyObject>]
             for photo in photoDictArray {

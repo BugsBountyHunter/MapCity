@@ -16,6 +16,8 @@
 		E292B8E32163A8DA00B2161E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E292B8E12163A8DA00B2161E /* Main.storyboard */; };
 		E292B8E52163A8E600B2161E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E292B8E42163A8E600B2161E /* Assets.xcassets */; };
 		E292B8E82163A8E600B2161E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E292B8E62163A8E600B2161E /* LaunchScreen.storyboard */; };
+		E2B304EC216655EA00DD02C1 /* PopVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B304EB216655EA00DD02C1 /* PopVC.swift */; };
+		E2B304EE2166654000DD02C1 /* ApiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B304ED2166654000DD02C1 /* ApiData.swift */; };
 		E2FEA0DE2164EDC6007C9920 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FEA0DD2164EDC6007C9920 /* PhotoCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +34,8 @@
 		E292B8E42163A8E600B2161E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E292B8E72163A8E600B2161E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E292B8E92163A8E600B2161E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E2B304EB216655EA00DD02C1 /* PopVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopVC.swift; sourceTree = "<group>"; };
+		E2B304ED2166654000DD02C1 /* ApiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiData.swift; sourceTree = "<group>"; };
 		E2FEA0DD2164EDC6007C9920 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		F9BAB57D9535A6C904166B6E /* Pods_MapCity.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapCity.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -104,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				E210C23A2164334200BE45C5 /* DroppablePin.swift */,
+				E2B304ED2166654000DD02C1 /* ApiData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -121,6 +126,7 @@
 			children = (
 				E292B8DD2163A8DA00B2161E /* AppDelegate.swift */,
 				E292B8DF2163A8DA00B2161E /* MapVC.swift */,
+				E2B304EB216655EA00DD02C1 /* PopVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -272,7 +278,9 @@
 			files = (
 				E2FEA0DE2164EDC6007C9920 /* PhotoCell.swift in Sources */,
 				E292B8E02163A8DA00B2161E /* MapVC.swift in Sources */,
+				E2B304EC216655EA00DD02C1 /* PopVC.swift in Sources */,
 				E210C23B2164334200BE45C5 /* DroppablePin.swift in Sources */,
+				E2B304EE2166654000DD02C1 /* ApiData.swift in Sources */,
 				E209D43121652CD20042E541 /* DataService.swift in Sources */,
 				E292B8DE2163A8DA00B2161E /* AppDelegate.swift in Sources */,
 				E209D42E216527F90042E541 /* Constents.swift in Sources */,
